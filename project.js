@@ -103,7 +103,7 @@ app.get("/updateuser", (req, res) => {
   connection.query(sql, [req.query.profile_id], function (err, results) {
     console.log(results);
     try {
-      res.send(`Thank you ${req.query.fname} with id = ${results.profile_id}!`);
+      res.send(`User ${req.query.fname} ${req.query.lname} has been updated`);
     } catch (err) {
       res.send(err);
     }
@@ -153,7 +153,7 @@ app.post("/submit", (req, res) => {
 
 
 //get all users
-app.get("/allusers", (req, res) => {
+app.get("/allprofiles", (req, res) => {
   console.log(req.query);
   var sql = 'SELECT * FROM user_profile'
   connection.query(sql, function(err, tables){
@@ -161,7 +161,7 @@ app.get("/allusers", (req, res) => {
     //check if there are results
     try {
       for (let i = 0; i < tables.length; i++){
-        var name = `${tables[i].profile_id}`+ ' ' + `${tables[i].fname}` + `${tables[i].lname}` + ' ' + `${tables[i].address1}` + ' ' + `${tables[i].address2}` + ' ' + `${tables[i].phone}` + ' ' + `${tables[i].email}\n`
+        var name = `${tables[i].profile_id}`+ ' ' + `${tables[i].fname}` + ' ' + `${tables[i].lname}` + ' ' + `${tables[i].address1}` + ' ' + `${tables[i].address2}` + ' ' + `${tables[i].phone}` + ' ' + `${tables[i].email}\n`
         res.write(name)
       }
       res.end()
