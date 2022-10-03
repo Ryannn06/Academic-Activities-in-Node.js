@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Node.js Express Save Data from Html Form to Mysql Database - Tutsmake.com</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container mt-4">
+      <div class="card">
+        <div class="card-body">
+          <h2>Add Profile</h2>
+          <hr></hr>
+ 
+          <form action="submit" method="POST">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" class="form-control" id="fname" aria-describedby="emailHelp" placeholder="Enter first name" name="fname">
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" class="form-control" id="lname" aria-describedby="emailHelp" placeholder="Enter last name" name="lname">
+            </div>
+            <div class="form-group">
+              <label for="address1">Address 1</label>
+              <input type="text" class="form-control" id="address1" aria-describedby="emailHelp" placeholder="Enter address 1" name="address1">
+            </div>
+            <div class="form-group">
+              <label for="address2">Address 2</label>
+              <input type="text" class="form-control" id="address2" aria-describedby="emailHelp" placeholder="Enter address 2" name="address2">
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="text" class="form-control" id="phone" aria-describedby="emailHelp" placeholder="Enter phone number" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="Enter email">
+            </div>        
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+    </div>
+  </div>
+  </body>
+</html>
