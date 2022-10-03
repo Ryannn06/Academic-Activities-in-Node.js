@@ -46,7 +46,7 @@ app.get("/", (req, res) => {
 app.get("/create_userprofile", (req, res) => {
   console.log(req.query);
   connection.query(
-    "CREATE TABLE user_profile (profile_id int NOT NULL AUTO_INCREMENT, fname VARCHAR(240), lname VARCHAR(240), address1 VARCHAR(255), address2 VARCHAR(255), phone INT(11), email VARCHAR(150), PRIMARY KEY(profile_id))",
+    "CREATE TABLE user_profile (profile_id int NOT NULL AUTO_INCREMENT, fname VARCHAR(240), lname VARCHAR(240), address1 VARCHAR(255), address2 VARCHAR(255), phone VARCHAR(11), email VARCHAR(150), PRIMARY KEY(profile_id), UNIQUE KEY(email, phone))",
   function (err, results) {
     console.log(results);
     try {
@@ -88,10 +88,11 @@ app.get("/adduser", (req, res) => {
 
   var sql = `INSERT INTO user_profile (fname, lname, address1, address2, phone, email) VALUES ("${fname}", "${lname}", "${address1}", "${address2}", "${phone}", "${email}")`;
   connection.query(sql,function (err, results) {
-    if (err) throw err
-      console.log('Record inserted');
-      //req.flash('success', 'Data added successfully!');
-      res.send('user profile added');
+    try {
+      res.send(`User ${req.query.fname} ${req.query.lname} has been added`);
+    } catch (err) {
+      res.send(err);
+    }
   })
 });
 
