@@ -100,6 +100,7 @@ app.get("/adduser", (req, res) => {
 app.get("/updateuser", (req, res) => {
   console.log(req.query);
   var sql = `UPDATE user_profile SET fname = '${req.query.fname}', lname = '${req.query.lname}', address1 = '${req.query.address1}', address2 = '${req.query.address2}', phone = '${req.query.phone}', email = '${req.query.email}' WHERE profile_id = ?`;
+  
   connection.query(sql, [req.query.profile_id], function (err, results) {
     console.log(results);
     try {
@@ -119,7 +120,7 @@ app.get("/deleteuser", (req, res) => {
   var sql = "DELETE FROM user_profile WHERE profile_id = ?"
   connection.query( sql, [req.query.profile_id],function (err, results) {
     console.log(results);
-    res.redirect("/");
+    res.send("User has been deleted");
   }
   )
 });
