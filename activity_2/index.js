@@ -67,7 +67,7 @@ app.get("/allprofiles", (req, res) => {
 app.get("/create_userprofile", (req, res) => {
   console.log(req.query);
   connection.query(
-    "CREATE TABLE user_profile (profile_id int NOT NULL AUTO_INCREMENT, fname VARCHAR(240), lname VARCHAR(240), address1 VARCHAR(255), address2 VARCHAR(255), phone VARCHAR(11), email VARCHAR(150), PRIMARY KEY(profile_id), UNIQUE KEY(email, phone))",
+    "CREATE TABLE user_profile (profile_id int NOT NULL AUTO_INCREMENT, fname VARCHAR(240), lname VARCHAR(240), address1 VARCHAR(255), address2 VARCHAR(255), phone VARCHAR(11), email VARCHAR(150), PRIMARY KEY(profile_id))",
   function (err, results) {
     console.log(results);
     try {
@@ -105,7 +105,7 @@ app.get("/adduser", (req, res) => {
 //update user
 app.get("/updateuser", (req, res) => {
   console.log(req.query);
-  var sql = `UPDATE user_profile SET fname = '${req.query.fname}', lname = '${req.query.lname}', address1 = '${req.query.address1}', address2 = '${req.query.address2}', phone = '${req.query.phone}', email = '${req.query.email}' WHERE profile_id = ?`;
+  const sql = `UPDATE user_profile SET fname = '${req.query.fname}', lname = '${req.query.lname}', address1 = '${req.query.address1}', address2 = '${req.query.address2}', phone = '${req.query.phone}', email = '${req.query.email}' WHERE profile_id = ?`;
   
   connection.query(sql, [req.query.profile_id], function (err, results) {
     console.log(results);
@@ -123,7 +123,7 @@ app.get("/updateuser", (req, res) => {
 app.get("/deleteuser", (req, res) => {
   console.log(req.query);
 
-  var sql = "DELETE FROM user_profile WHERE profile_id = ?"
+  const sql = "DELETE FROM user_profile WHERE profile_id = ?"
   connection.query( sql, [req.query.profile_id],function (err, results) {
     console.log(results);
     res.send("User has been deleted");
@@ -141,22 +141,81 @@ app.get("/create", (req, res) => {
 app.post("/submit", (req, res) => {
   console.log(req.body);
 
-  var fname = req.body.fname;
-  var lname = req.body.lname;
-  var address1 = req.body.address1;
-  var address2 = req.body.address2;
-  var phone = req.body.phone;  
-  var email = req.body.email;
+  const fname = req.body.fname;
+  const lname = req.body.lname;
+  const address1 = req.body.address1;
+  const address2 = req.body.address2;
+  const phone = req.body.phone;  
+  const email = req.body.email;
 
-  var sql = `INSERT INTO user_profile (fname, lname, address1, address2, phone, email) VALUES ("${fname}", "${lname}", "${address1}", "${address2}", "${phone}", "${email}")`;
+  const sql = `INSERT INTO user_profile (fname, lname, address1, address2, phone, email) VALUES ("${fname}", "${lname}", "${address1}", "${address2}", "${phone}", "${email}")`;
    connection.query(sql,function (err, rows, fields) {
-    if (err) throw err
-      console.log('record inserted');
-      //req.flash('success', 'Data added successfully!');
-      res.redirect('/create');
+    try {
+      res.redirect(`/create`);
+    } catch (err) {
+      res.send(err);
+    }
   })
 });   
 
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+});
+
+
+// CREATE(insert)
+app.post("/profiling", (req, res) => {
+  const { fname, lname, address1, address2, phone, email } = req.body;
+
+  const sql = `INSERT INTO user_profile ( fname, lname, address1, address2, phone, email ) VALUES (?,?,?,?,?,?)`
+  
+  connection.query( sql, [fname, lname, address1, address2, phone, email], (err, results) => {
+      try {
+        if (results.affectedRows > 0) {
+          res.json({ message: "Data has been added!" });
+        } else {
+          res.json({ message: "Something went wrong." });
+        }
+      } catch (err) {
+        res.json({ message: err });
+      }
+
+    }
+  );
+});
+
+// READ (select)
+app.get("/profiling", (req, res) => {
+  const sql = `SELECT * FROM user_profile`
+
+  connection.query( sql, (err, results) => {
+    try {
+      if (results.length > 0) {
+        res.json(results);
+      }
+    } catch (err) {
+      res.json({ message: err });
+    }
+  });
+});
+
+
+// DELETE
+app.delete("/profiling", (req, res) => {
+  const { profile_id } = req.body;
+
+  const sql = `DELETE FROM user_profile WHERE profile_id = ?`
+
+  connection.query( sql, [profile_id], (err, results) => {
+    try {
+      if (results.affectedRows > 0) {
+        res.json({ message: "Data has been deleted!" });
+      } else {
+        res.json({ message: "Something went wrong." });
+      }
+    } catch (err) {
+      res.json({ message: err });
+    }
+  });
 });
