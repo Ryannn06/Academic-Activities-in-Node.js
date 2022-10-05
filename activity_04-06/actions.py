@@ -9,14 +9,19 @@ def create_user():
     phone = input("Phone Number: ")
     email = input("Email: ")
 
-    # Data to send in post request.
-    data = {'fname':firstname, 'lname':lastname, 'address1':address1, 'address2':address2, 'phone':phone, 'email':email}
+    if len(firstname) > 0 and len(lastname) > 0 and len(address1) > 0 and len (address2) > 0 and len(phone) > 0 and len(email) > 0:
+        # Data to send in post request.
+        data = {'fname':firstname, 'lname':lastname, 'address1':address1, 'address2':address2, 'phone':phone, 'email':email}
 
-    # POST request to node server
-    res = requests.post('http://127.0.0.1:3000/profiling', json=data)
-    returned_data = res.json()
-    print(returned_data)
-    user_choice()
+        # POST request to node server
+        res = requests.post('http://127.0.0.1:3000/profiling', json=data)
+        returned_data = res.json()
+        print(returned_data)
+        user_choice()
+
+    else:
+        print('Complete the Form')
+        create_user()    
 
 
 #Read
@@ -39,14 +44,20 @@ def update_user():
     phone = int(input("Phone Number: "))
     email = input("Email: ")
 
-    # Data to send in put request.
-    data = {'fname':firstname, 'lname':lastname, 'address1':address1, 'address2':address2, 'phone':phone, 'email':email, 'profile_id':profile_id}
+    if len(str(profile_id)) > 0 and len(firstname) > 0 and len(lastname) > 0 and len(address1) > 0 and len (address2) > 0 and len(str(phone)) > 0 and len(email) > 0:    
 
-    # The PUT request to the node server
-    res = requests.put('http://127.0.0.1:3000/profiling',json=data)
-    returned_data = res.json()
-    print(returned_data)
-    user_choice()
+        # Data to send in put request.
+        data = {'fname':firstname, 'lname':lastname, 'address1':address1, 'address2':address2, 'phone':phone, 'email':email, 'profile_id':profile_id}
+
+        # The PUT request to the node server
+        res = requests.put('http://127.0.0.1:3000/profiling',json=data)
+        returned_data = res.json()
+        print(returned_data)
+        user_choice()
+
+    else:
+        print("Complete the Form")
+        update_user()
     
 
 #delete_user
