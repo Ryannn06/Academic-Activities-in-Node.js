@@ -3,7 +3,12 @@ const mysql = require('mysql2')
 const app = express()
 const port = 3000;
 
+
 const bodyParser = require('body-parser');
+const spawn = require("child_process").spawn;
+
+
+const table_name = 'user_profile'
 
 //app.use(express.bodyParser());
 app.use(bodyParser.json());
@@ -70,59 +75,93 @@ app.get("/create_userprofile", (req, res) => {
 })
 
 
-// CREATE(insert)
-app.post("/profiling", (req, res) => {
-  const { fname, lname, address1, address2, phone, email } = req.body;
+// Create
+app.post('/profiling', (req, res)=> {
+    var fname = req.body.fname;
+    var lname = req.body.lname;
+    var address1 = req.body.address1;
+    var address2 = req.body.address2;
+    var phone = req.body.phone;
+    var email = req.body.email;
 
-  const sql = `INSERT INTO user_profile ( fname, lname, address1, address2, phone, email ) VALUES (?,?,?,?,?,?)`
-  
-  connection.query( sql, [fname, lname, address1, address2, phone, email], (err, results) => {
-      try {
-        if (results.affectedRows > 0) {
-          res.json({ message: "Data has been added!" });
-        } else {
-          res.json({ message: "Something went wrong." });
+    var sql = `INSERT INTO ${table_name} (fname, lname, address1, address2, phone, email) VALUES (?, ?, ?, ?, ?, ?)`
+    
+    connection.query( sql,
+        [
+          fname,
+          lname,
+          address1,
+          address2,
+          phone,
+          email
+        ],
+        function (err, results) {
+          try {
+            res
+            res.json({ data: [fname, lname, address1, address2, phone, email] });
+          } catch (err) {
+            res.send(Error, `${err}`);
+
+          }
         }
-      } catch (err) {
-        res.json({ message: err });
-      }
+      );
+});
 
+
+//READ
+app.get("/profiling", (req, res) => {
+  var sql = `SELECT * FROM ${table_name}`
+    connection.query( sql, function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+  });
+
+
+
+//UPDATE
+app.put("/profiling", (req, res) => {
+    var fname = req.body.fname;
+    var lname = req.body.lname;
+    var address1 = req.body.address1;
+    var address2 = req.body.address2;
+    var phone = req.body.phone;
+    var email = req.body.email;
+    var profile_id = req.body.profile_id;
+
+    var sql = `UPDATE ${table_name} SET fname=?, lname=?, address1=?, address2=?, phone=?, email=? WHERE profile_id=?`
+
+  connection.query(
+    sql,
+    [
+      fname,
+      lname,
+      address1,
+      address2,
+      phone,
+      email,
+      profile_id
+    ],
+    function (err, results) {
+      try {
+        res.json({ data: [ profile_id, fname, lname, address1, address2, phone, email] });
+      } catch (err) {
+        res.send(Error, `${err}`);
+      }
     }
   );
 });
 
-// READ (select)
-app.get("/profiling", (req, res) => {
-  const sql = `SELECT * FROM user_profile`
 
-  connection.query( sql, (err, results) => {
-    try {
-      if (results.length > 0) {
-        res.json(results);
-      }
-    } catch (err) {
-      res.json({ message: err });
-    }
-  });
-});
-
-// DELETE
+//DELETE
 app.delete("/profiling", (req, res) => {
-  const { id } = req.body;
+    var profile_id = req.body.profile_id;
 
-  const sql = `DELETE FROM user_profile WHERE profile_id = ?`
-
-  connection.query( sql, [profile_id], (err, results) => {
-    try {
-      if (results.affectedRows > 0) {
-        res.json({ message: "Data has been deleted!" });
-      } else {
-        res.json({ message: "Something went wrong." });
-      }
-    } catch (err) {
-      res.json({ message: err });
-    }
-  });
+   var sql = `DELETE FROM ${table_name} WHERE profile_id=?`
+    connection.query(sql, [profile_id], function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
 });
 
 
