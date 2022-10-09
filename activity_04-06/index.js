@@ -71,8 +71,25 @@ app.get("/create_userprofile", (req, res) => {
       res.send(err + "error");
     }
   }
-  )
-})
+  );
+});
+
+
+//drop table
+app.get("/drop_userprofile", (req, res) => {
+  console.log(req.query);
+  var sql = `DROP table user_profile`
+  
+  connection.query( sql, function (err, results) {
+    console.log(results);
+    try {
+      res.send('Table for User Profile deleted!');
+    } catch (err) {
+      res.send(err + "error");
+    }
+  }
+  );
+});
 
 
 // Create
@@ -168,3 +185,71 @@ app.delete("/profiling", (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+//motion detector table
+app.get("/motion_table", (req, res) => {
+  console.log(req.query);
+  var sql = `CREATE TABLE motiontime (motion_id int NOT NULL AUTO_INCREMENT, stime DATETIME, ftime DATETIME, PRIMARY KEY(motion_id))`
+  
+  connection.query( sql, function (err, results) {
+    console.log(results);
+      try {
+        res.send('Table for Motion Time created!');
+      } catch (err) {
+        res.send(err + "error");
+      }
+    }
+  );
+});
+
+
+//motion detector table with string date
+app.get("/motions_table", (req, res) => {
+  console.log(req.query);
+  var sql = `CREATE TABLE motiontimes (motion_id int NOT NULL AUTO_INCREMENT, stime VARCHAR(30), ftime VARCHAR(30), PRIMARY KEY(motion_id))`
+  
+  connection.query( sql, function (err, results) {
+    console.log(results);
+      try {
+        res.send('Table for Motion Time created!');
+      } catch (err) {
+        res.send(err + "error");
+      }
+    }
+  );
+});
+
+
+// Create 
+app.post('/motion', (req, res)=> {
+    var stime = req.body.stime;
+    var ftime = req.body.ftime;
+
+    var sql = `INSERT INTO motiontimes (stime, ftime) VALUES(?, ?)`
+    
+    connection.query( sql,
+        [
+          stime,
+          ftime
+        ],
+        function (err, results) {
+          try {
+            res
+            res.json({ data: [stime, ftime] });
+          } catch (err) {
+            res.send(Error, `${err}`);
+          }
+        }
+      );
+});
+
+//READ
+app.get("/motion", (req, res) => {
+  var sql = `SELECT * FROM motiontimes`
+  
+  connection.query( sql, function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+  });
