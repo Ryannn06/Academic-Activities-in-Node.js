@@ -182,11 +182,6 @@ app.delete("/profiling", (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-
 //motion detector table
 app.get("/motion_table", (req, res) => {
   console.log(req.query);
@@ -255,9 +250,11 @@ app.get("/motion", (req, res) => {
   });
 
 
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
 
 /*
 // Create 
