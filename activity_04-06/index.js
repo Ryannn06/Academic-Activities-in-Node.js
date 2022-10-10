@@ -226,7 +226,7 @@ app.post('/motion', (req, res)=> {
     var stime = req.body.stime;
     var ftime = req.body.ftime;
 
-    var sql = `INSERT INTO motiontimes (stime, ftime) VALUES(?, ?)`
+    var sql = `INSERT INTO motiontimes (stime, ftime) VALUES (?, ?) `
     
     connection.query( sql,
         [
@@ -253,3 +253,33 @@ app.get("/motion", (req, res) => {
       res.json(result);
     });
   });
+
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+/*
+// Create 
+app.post('/motion', (req, res)=> {
+    var stime = req.body.stime;
+    var ftime = req.body.ftime;
+
+    var sql = `INSERT INTO motiontime (stime, ftime) VALUES ( STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s.mmmmmm'), STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s.mmmmmm') ) `
+    
+    connection.query( sql,
+        [
+          stime,
+          ftime
+        ],
+        function (err, results) {
+          try {
+            res
+            res.json({ data: [stime, ftime] });
+          } catch (err) {
+            res.send(Error, `${err}`);
+          }
+        }
+      );
+});
+*/
