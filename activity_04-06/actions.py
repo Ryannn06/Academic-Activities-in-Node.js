@@ -1,5 +1,4 @@
 import requests
-import motion_detect
 
 # Create
 def create_user():
@@ -100,7 +99,7 @@ def read_detection():
 def user_choice():
 
     while True:
-        choice = input("Enter the corresponding number of choice:\n(1) Create Data\n(2) Read Data\n(3) Update Data\n(4) Delete Data\n(5) Open Motion Detector\n(6) Read Detected Motions\n(7) Quit\nYour choice:")
+        choice = input("Enter the corresponding number of choice:\n(1) Create Data\n(2) Read Data\n(3) Update Data\n(4) Delete Data\n(5) Quit\nYour choice:")
 
         if choice == '1':
             create_user()
@@ -111,10 +110,6 @@ def user_choice():
         if choice == '4':
             delete()
         if choice == '5':
-            motion_detect.detect()
-        if choice == '6':
-            read_detection()
-        if choice == '7':
             print("System quit!")
             break
 
