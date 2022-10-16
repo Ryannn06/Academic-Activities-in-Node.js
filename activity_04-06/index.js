@@ -11,16 +11,15 @@ const spawn = require("child_process").spawn;
 const table_name = 'user_profile'
 
 //app.use(express.bodyParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 //create connnection to database
 const connection = mysql.createConnection({
-	host: 'localhost',
-	user:'root',
-	password:'',
-	database: 'project.js',
+  host: 'localhost',
+  user:'root',
+  password:'',
+  database: 'project.js',
   multipleStatements: true
 })
 
@@ -185,7 +184,7 @@ app.delete("/profiling", (req, res) => {
 //motion detector table
 app.get("/motion_table", (req, res) => {
   console.log(req.query);
-  var sql = `CREATE TABLE motiontime (motion_id int NOT NULL AUTO_INCREMENT, stime DATETIME, ftime DATETIME, PRIMARY KEY(motion_id))`
+  var sql = `CREATE TABLE motiontime (motion_id int NOT NULL AUTO_INCREMENT, stime DATETIME, img BLOB, PRIMARY KEY(motion_id))`
   
   connection.query( sql, function (err, results) {
     console.log(results);
@@ -199,19 +198,19 @@ app.get("/motion_table", (req, res) => {
 });
 
 
-//motion detector table with string date
-app.get("/motions_table", (req, res) => {
+//drop table
+app.get("/drop_motion", (req, res) => {
   console.log(req.query);
-  var sql = `CREATE TABLE motiontimes (motion_id int NOT NULL AUTO_INCREMENT, stime VARCHAR(30), ftime VARCHAR(30), PRIMARY KEY(motion_id))`
+  var sql = `DROP table motiontime`
   
   connection.query( sql, function (err, results) {
     console.log(results);
-      try {
-        res.send('Table for Motion Time created!');
-      } catch (err) {
-        res.send(err + "error");
-      }
+    try {
+      res.send('Table for Motion deleted!');
+    } catch (err) {
+      res.send(err + "error");
     }
+  }
   );
 });
 
@@ -219,19 +218,18 @@ app.get("/motions_table", (req, res) => {
 // Create 
 app.post('/motion', (req, res)=> {
     var stime = req.body.stime;
-    var ftime = req.body.ftime;
+    var img = req.body.img;
 
-    var sql = `INSERT INTO motiontimes (stime, ftime) VALUES (?, ?) `
+    var sql = `INSERT INTO motiontime (stime, img) VALUES (?, ?) `
     
     connection.query( sql,
         [
           stime,
-          ftime
+          img
         ],
         function (err, results) {
           try {
-            res
-            res.json({ data: [stime, ftime] });
+            res.json({ data: [stime, img] });
           } catch (err) {
             res.send(Error, `${err}`);
           }
@@ -241,7 +239,7 @@ app.post('/motion', (req, res)=> {
 
 //READ
 app.get("/motion", (req, res) => {
-  var sql = `SELECT * FROM motiontimes`
+  var sql = `SELECT * FROM motiontime`
   
   connection.query( sql, function (err, result) {
       if (err) throw err;
@@ -261,7 +259,6 @@ app.listen(port, () => {
 app.post('/motion', (req, res)=> {
     var stime = req.body.stime;
     var ftime = req.body.ftime;
-
     var sql = `INSERT INTO motiontime (stime, ftime) VALUES ( STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s.mmmmmm'), STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s.mmmmmm') ) `
     
     connection.query( sql,

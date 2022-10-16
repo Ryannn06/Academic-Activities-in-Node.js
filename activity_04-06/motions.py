@@ -1,9 +1,9 @@
 import requests
 import json
-
 # importing OpenCV, time and Pandas library
 # importing datetime class from datetime library
 import cv2, time, pandas
+import numpy as np;
 from datetime import datetime
 
 # Assigning our static_back to None
@@ -63,31 +63,12 @@ while True:
 
         (x, y, w, h) = cv2.boundingRect(contour)
         # making green rectangle around the moving object
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 4)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
     # Appending status of motion
     motion_list.append(motion)
 
     motion_list = motion_list[-2:]
-
-    # Appending Start time of motion
-    if motion_list[-1] == 1 and motion_list[-2] == 0:
-        time.append(datetime.now())
-        print("Start Time of Motion: ", datetime.now())
-
-    # Appending End time of motion
-    if motion_list[-1] == 0 and motion_list[-2] == 1:
-        time.append(datetime.now())
-        print("End Time of Motion: ", datetime.now())
-
-        stime = json.dumps(datetime.now(), default=str)
-
-        data = {'stime': stime}
-
-        #POST request to node server
-        res = requests.post('http://127.0.0.1:3000/motion', json=data)
-        returned_data = res.json()
-        print(returned_data)
   
     # Displaying image in gray_scale
     cv2.imshow("Gray Frame", gray)
@@ -103,7 +84,47 @@ while True:
     # Displaying color frame with contour of motion of object
     cv2.imshow("Color Frame", frame)
 
-    key = cv2.waitKey(1)
+    # Appending Start time of motion
+    if motion_list[-1] == 1 and motion_list[-2] == 0:
+        start_time = datetime.now()
+
+        time.append(start_time)
+        print("Start Time of Motion: ", start_time)
+
+        start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        stime = str(start_time)
+
+        # read the image file
+        image_save = cv2.imwrite('image.png', frame)
+
+        #read image to be converted
+        image = cv2.imread('image.png', 2)
+          
+        ret, img = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+          
+        # converting to its binary form
+        bw = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+
+        img = json.dumps(str(img.tolist()))
+
+        data = {'stime': stime, 'img':img}
+
+        res = requests.post('http://127.0.0.1:3000/motion', json=data)
+        returned_data = res.json()
+        #print(returned_data)
+
+
+    # Appending End time of motion
+    if motion_list[-1] == 1 and motion_list[-2] == 1:
+        #return the motion[-1] to 0 value so it detects the start time again
+        motion_list[-1] = 0
+        
+        end_time = datetime.now()
+        print("End Time of Motion: ", end_time)
+
+
+    key = cv2.waitKey(1)    
+    
     # if q entered whole process will stop
     if key == ord('q'):
     #   # if something is movingthen it append the end time of movement
@@ -111,12 +132,6 @@ while True:
             time.append(datetime.now())
         break
 
-# Appending time of motion in DataFrame
-# for i in range(0, len(time), 2):
-#   df = df.append({"Start":time[i], "End":time[i + 1]}, ignore_index = True)
-
-# # Creating a CSV file in which time of movements will be saved
-#df.to_csv("Time_of_movements.csv")
 
 video.release()
 
