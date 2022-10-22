@@ -3,7 +3,7 @@ import json
 # importing OpenCV, time and Pandas library
 # importing datetime class from datetime library
 import cv2, time, pandas
-import numpy as np;
+#import numpy as np
 from datetime import datetime
 
 # Assigning our static_back to None
@@ -94,20 +94,7 @@ while True:
         start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
         stime = str(start_time)
 
-        # read the image file
-        image_save = cv2.imwrite('image.png', frame)
-
-        #read image to be converted
-        image = cv2.imread('image.png', 2)
-          
-        ret, img = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
-          
-        # converting to its binary form
-        bw = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-
-        img = json.dumps(str(img.tolist()))
-
-        data = {'stime': stime, 'img':img}
+        data = {'stime': stime}
 
         res = requests.post('http://127.0.0.1:3000/motion', json=data)
         returned_data = res.json()

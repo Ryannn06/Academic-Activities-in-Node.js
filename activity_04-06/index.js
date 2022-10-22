@@ -31,12 +31,6 @@ connection.connect(function(err) {
 });
 
 
-//homepage or the root route
-app.get("/", (req, res) => {
-  res.send('Hello, Everyone!');
-});
-
-
 //get all users
 app.get("/allprofiles", (req, res) => {
   console.log(req.query);
@@ -181,10 +175,15 @@ app.delete("/profiling", (req, res) => {
 });
 
 
+//homepage or the root route
+app.get("/", (req, res) => {
+  res.send('Hello, Everyone!');
+});
+
 //motion detector table
 app.get("/motion_table", (req, res) => {
   console.log(req.query);
-  var sql = `CREATE TABLE motiontime (motion_id int NOT NULL AUTO_INCREMENT, stime DATETIME, img BLOB, PRIMARY KEY(motion_id))`
+  var sql = `CREATE TABLE motiontime (motion_id int NOT NULL AUTO_INCREMENT, stime DATETIME, PRIMARY KEY(motion_id))`
   
   connection.query( sql, function (err, results) {
     console.log(results);
@@ -218,18 +217,16 @@ app.get("/drop_motion", (req, res) => {
 // Create 
 app.post('/motion', (req, res)=> {
     var stime = req.body.stime;
-    var img = req.body.img;
 
-    var sql = `INSERT INTO motiontime (stime, img) VALUES (?, ?) `
+    var sql = `INSERT INTO motiontime (stime) VALUES (?) `
     
     connection.query( sql,
         [
-          stime,
-          img
+          stime
         ],
         function (err, results) {
           try {
-            res.json({ data: [stime, img] });
+            res.json({ data: [stime] });
           } catch (err) {
             res.send(Error, `${err}`);
           }
